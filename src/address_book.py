@@ -1,5 +1,8 @@
+import pickle
 from collections import UserDict
 from datetime import datetime, timedelta
+
+ADDRESSBOOK_FILENAME = "addressbook.pkl"
 
 
 class Field:
@@ -109,7 +112,6 @@ class AddressBook(UserDict):
             try:
                 birthday_this_year = birthday.replace(year=today.year)
             except ValueError:
-                # 29.02 у невисокосному році
                 birthday_this_year = birthday.replace(
                     year=today.year,
                     day=28
@@ -149,3 +151,16 @@ class AddressBook(UserDict):
             return "No contacts saved."
 
         return "\n".join(str(record) for record in self.data.values())
+
+
+def save_data(book, filename=ADDRESSBOOK_FILENAME):
+    with open(filename, "wb") as file:
+        pickle.dump(book, file)
+
+
+def load_data(filename=ADDRESSBOOK_FILENAME):
+    try:
+        with open(filename, "rb") as file:
+            return pickle.load(file)
+    except FileNotFoundError:
+        return AddressBook()
